@@ -29,9 +29,9 @@ class LoginViewController: UIViewController {
         self.iCloudLogin({ (success) -> () in
             if success {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                var viewController = storyboard.instantiateViewControllerWithIdentifier("MainViewController") as MainViewController
+                var viewController = storyboard.instantiateViewControllerWithIdentifier("MainViewController") as! MainViewController
                 viewController.user = self.user
-                self.presentViewController(viewController, animated: false, nil)
+                self.presentViewController(viewController, animated: false, completion: nil)
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             } else {
                 // TODO error handling
@@ -44,14 +44,15 @@ class LoginViewController: UIViewController {
         self.cloudManager!.requestPermission { (granted) -> () in
             if !granted {
                 let iCloudAlert = UIAlertController(title: "iCloud Error", message: "There was an error connecting to iCloud. Check iCloud settings by going to Settings > iCloud.", preferredStyle: UIAlertControllerStyle.Alert)
-                let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, nil)
+                let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+                
                 iCloudAlert.addAction(okAction)
-                self.presentViewController(iCloudAlert, animated: true, nil)
+                self.presentViewController(iCloudAlert, animated: true, completion: nil)
             } else {
-                self.cloudManager?.getUser({ (success, user) -> () in
+                self.cloudManager!.getUser({ (success, user) -> () in
                     if success {
                         self.user = user
-                        self.cloudManager?.getUserInfo(self.user!, completionHandler: { (success, user) -> () in
+                        self.cloudManager!.getUserInfo(self.user!, completionHandler: { (success, user) -> () in
                             if success {
                                 completionHandler(success: true)
                             }

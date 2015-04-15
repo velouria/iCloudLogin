@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 velouria.org. All rights reserved.
 //
 
-import UIKit
 import CloudKit
 
 class CloudManager: NSObject {
