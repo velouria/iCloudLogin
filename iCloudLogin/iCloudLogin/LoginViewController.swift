@@ -29,7 +29,7 @@ class LoginViewController: UIViewController {
         self.iCloudLogin({ (success) -> () in
             if success {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                var viewController = storyboard.instantiateViewControllerWithIdentifier("MainViewController") as! MainViewController
+                let viewController = storyboard.instantiateViewControllerWithIdentifier("MainViewController") as! MainViewController
                 viewController.user = self.user
                 self.presentViewController(viewController, animated: false, completion: nil)
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = false

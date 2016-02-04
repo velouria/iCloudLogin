@@ -17,7 +17,7 @@ class CloudManager: NSObject {
     }
 
     func requestPermission(completionHandler: (granted: Bool) -> ()) {
-        defaultContainer!.requestApplicationPermission(CKApplicationPermissions.PermissionUserDiscoverability, completionHandler: { applicationPermissionStatus, error in
+        defaultContainer!.requestApplicationPermission(CKApplicationPermissions.UserDiscoverability, completionHandler: { applicationPermissionStatus, error in
             if applicationPermissionStatus == CKApplicationPermissionStatus.Granted {
                 completionHandler(granted: true)
             } else {
@@ -33,11 +33,11 @@ class CloudManager: NSObject {
                 completionHandler(success: false, user: nil)
             } else {
                 let privateDatabase = self.defaultContainer!.privateCloudDatabase
-                privateDatabase.fetchRecordWithID(userRecordID, completionHandler: { (user: CKRecord?, anError) -> Void in
+                privateDatabase.fetchRecordWithID(userRecordID!, completionHandler: { (user: CKRecord?, anError) -> Void in
                     if (error != nil) {
                         completionHandler(success: false, user: nil)
                     } else {
-                        var user = User(userRecordID: userRecordID)
+                        let user = User(userRecordID: userRecordID!)
                         completionHandler(success: true, user: user)
                     }
                 })
@@ -50,8 +50,8 @@ class CloudManager: NSObject {
             if fetchError != nil {
                 completionHandler(success: false, user: nil)
             } else {
-                user.firstName = info.firstName
-                user.lastName = info.lastName
+                user.firstName = info!.displayContact!.givenName
+                user.lastName = info!.displayContact!.familyName
                 completionHandler(success: true, user: user)
             }
         }
