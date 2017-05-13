@@ -9,52 +9,52 @@
 import CloudKit
 
 class CloudManager: NSObject {
-   
+    
     var defaultContainer: CKContainer?
     
     override init() {
-        defaultContainer = CKContainer.defaultContainer()
+        defaultContainer = CKContainer.default()
     }
-
-    func requestPermission(completionHandler: (granted: Bool) -> ()) {
-        defaultContainer!.requestApplicationPermission(CKApplicationPermissions.UserDiscoverability, completionHandler: { applicationPermissionStatus, error in
-            if applicationPermissionStatus == CKApplicationPermissionStatus.Granted {
-                completionHandler(granted: true)
+    
+    func requestPermission(_ completionHandler: @escaping (_ granted: Bool) -> ()) {
+        defaultContainer!.requestApplicationPermission(CKApplicationPermissions.userDiscoverability, completionHandler: { applicationPermissionStatus, error in
+            if applicationPermissionStatus == CKApplicationPermissionStatus.granted {
+                completionHandler(true)
             } else {
                 // very simple error handling
-                completionHandler(granted: false)
+                completionHandler(false)
             }
         })
     }
     
-    func getUser(completionHandler: (success: Bool, user: User?) -> ()) {
-        defaultContainer!.fetchUserRecordIDWithCompletionHandler { (userRecordID, error) in
+    func getUser(_ completionHandler: @escaping (_ success: Bool, _ user: User?) -> ()) {
+        defaultContainer!.fetchUserRecordID { (userRecordID, error) in
             if error != nil {
-                completionHandler(success: false, user: nil)
+                completionHandler(false, nil)
             } else {
                 let privateDatabase = self.defaultContainer!.privateCloudDatabase
-                privateDatabase.fetchRecordWithID(userRecordID!, completionHandler: { (user: CKRecord?, anError) -> Void in
+                privateDatabase.fetch(withRecordID: userRecordID!, completionHandler: { (user: CKRecord?, anError) -> Void in
                     if (error != nil) {
-                        completionHandler(success: false, user: nil)
+                        completionHandler(false, nil)
                     } else {
                         let user = User(userRecordID: userRecordID!)
-                        completionHandler(success: true, user: user)
+                        completionHandler(true, user)
                     }
                 })
             }
         }
     }
-
-    func getUserInfo(user: User, completionHandler: (success: Bool, user: User?) -> ()) {
-        defaultContainer!.discoverUserInfoWithUserRecordID(user.userRecordID) { (info, fetchError) in
-            if fetchError != nil {
-                completionHandler(success: false, user: nil)
+    
+    func getUserInfo(_ user: User, completionHandler: @escaping (_ success: Bool, _ user: User?) -> ()) {
+        defaultContainer!.discoverUserIdentity(withUserRecordID: user.userRecordID, completionHandler: { (userIdentity, error) in
+            if error != nil {
+                completionHandler(false, nil)
             } else {
-                user.firstName = info!.displayContact!.givenName
-                user.lastName = info!.displayContact!.familyName
-                completionHandler(success: true, user: user)
+                user.firstName = userIdentity!.nameComponents!.givenName
+                user.lastName = userIdentity!.nameComponents!.familyName
+                completionHandler(true, user)
             }
-        }
+        })
     }
-
+    
 }

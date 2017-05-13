@@ -18,7 +18,7 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         loggedInLabel!.text = "Welcome \(user!.firstName!) \(user!.lastName!)!"
     }
     
